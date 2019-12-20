@@ -14,4 +14,6 @@ class Menu extends Model
     protected $table = 'menus';
 
     protected $fillable = ['field', 'max_depth', 'max_children'];
+
+
 }
