@@ -22,6 +22,7 @@ class MenuController extends Controller
         $menu->max_children = $request->max_children;
 
         $menu->save();
+
     }
 
     /**
