@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Menu;
 use Illuminate\Http\Request;
 
 class MenuController extends Controller
@@ -14,7 +15,13 @@ class MenuController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $menu = new Menu;
+
+        $menu->field = $request->field;
+        $menu->max_depth = $request->max_depth;
+        $menu->max_children = $request->max_children;
+
+        $menu->save();
     }
 
     /**
