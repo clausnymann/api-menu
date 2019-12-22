@@ -3,12 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Menu;
+use App\Item;
 use Illuminate\Http\Request;
 
 class MenuController extends Controller
 {
     /**
-     * Store a newly created resource in storage.
+     * Store menu.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
@@ -27,7 +28,7 @@ class MenuController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Display menu.
      *
      * @param  mixed  $menu
      * @return \Illuminate\Http\Response
@@ -40,7 +41,7 @@ class MenuController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update menu.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  mixed  $menu
@@ -60,13 +61,15 @@ class MenuController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove menu.
      *
      * @param  mixed  $menu
      * @return \Illuminate\Http\Response
      */
     public function destroy($menu)
     {
+
+        //Item::whereMenuId($menu)->delete();
         $destroyed = Menu::destroy($menu);
 
         return response(null, $destroyed ? 204 : 404);

@@ -2,34 +2,44 @@
 
 namespace App\Http\Controllers;
 
+use App\Menu;
 use Illuminate\Http\Request;
+use App\Item;
 
 class ItemController extends Controller
 {
     /**
-     * Store a newly created resource in storage.
+     * Store item.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->json()->all();
+
+        $item = new Item;
+        $item->field = $data['field'];
+        $item->save();
+
+        return response($item, 201);
     }
 
     /**
-     * Display the specified resource.
+     * Display item.
      *
      * @param  mixed  $item
      * @return \Illuminate\Http\Response
      */
     public function show($item)
     {
-        //
+        $item = Item::find($item);
+
+        return response($item, 200);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update item.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  mixed  $item
@@ -37,17 +47,25 @@ class ItemController extends Controller
      */
     public function update(Request $request, $item)
     {
-        //
+        $data = $request->json()->all();
+
+        $item = Item::find($item);
+        $item->field = $data['field'];
+        $item->save();
+
+        return response($item, 201);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove item.
      *
      * @param  mixed  $item
      * @return \Illuminate\Http\Response
      */
     public function destroy($item)
     {
-        //
+        $destroyed = Item::destroy($item);
+
+        return response(null, $destroyed ? 204 : 404);
     }
 }
