@@ -14,6 +14,11 @@ class Menu extends Model
     protected $table = 'menus';
 
     protected $fillable = ['field', 'max_depth', 'max_children'];
+    protected $hidden = ['id', 'created_at', 'updated_at'];
 
+    public function rootItems()
+    {
+        return $this->hasMany(Item::class, 'menu_id');
+    }
 
 }

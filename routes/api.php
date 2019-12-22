@@ -1,4 +1,5 @@
 <?php
+Route::get('show-menus', 'TestController@showMenus'); // for testing only
 
 Route::post('/menus', 'MenuController@store');
 Route::get('/menus/{menu}', 'MenuController@show');

@@ -13,4 +13,18 @@ class Item extends Model
      */
     protected $table = 'items';
 
+    protected $fillable = ['field', 'parent_id', 'menu_id'];
+    protected $hidden = ['id', 'parent_id', 'menu_id', 'created_at', 'updated_at'];
+
+    public function parent()
+    {
+        return $this->belongsTo(Item::class, 'parent_id');
+    }
+
+    public function children()
+    {
+        return $this->hasMany(Item::class, 'parent_id')->with('children');
+    }
+
+
 }

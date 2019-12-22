@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Menu;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 
 class MenuController extends Controller
 {
@@ -16,13 +15,15 @@ class MenuController extends Controller
      */
     public function store(Request $request)
     {
+        $data = $request->json()->all();
+
         $menu = new Menu;
-        $menu->field = $request->field;
-        $menu->max_depth = $request->max_depth;
-        $menu->max_children = $request->max_children;
+        $menu->field = $data['field'];
+        $menu->max_depth = $data['max_depth'];
+        $menu->max_children = $data['max_children'];
         $menu->save();
 
-        return response($menu->only(['field', 'max_depth', 'max_children']), 201);
+        return response($menu, 201);
     }
 
     /**
@@ -33,7 +34,7 @@ class MenuController extends Controller
      */
     public function show($menu)
     {
-        $menu = Menu::find($menu, ['field', 'max_depth', 'max_children']);
+        $menu = Menu::find($menu);
 
         return response($menu, 200);
     }
@@ -47,14 +48,15 @@ class MenuController extends Controller
      */
     public function update(Request $request, $menu)
     {
+        $data = $request->json()->all();
 
         $menu = Menu::find($menu);
-        $menu->field = $request->field;
-        $menu->max_depth = $request->max_depth;
-        $menu->max_children = $request->max_children;
+        $menu->field = $data['field'];
+        $menu->max_depth = $data['max_depth'];
+        $menu->max_children = $data['max_children'];
         $menu->save();
 
-        return response($menu->only(['field', 'max_depth', 'max_children']), 201);
+        return response($menu, 201);
     }
 
     /**
@@ -67,11 +69,6 @@ class MenuController extends Controller
     {
         $destroyed = Menu::destroy($menu);
 
-        if($destroyed){
-            return response(null, 204);
-        }else{
-            return response(null, 404);
-        }
-
+        return response(null, $destroyed ? 204 : 404);
     }
 }
