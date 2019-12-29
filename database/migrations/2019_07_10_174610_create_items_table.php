@@ -18,7 +18,7 @@ class CreateItemsTable extends Migration
             $table->bigInteger('menu_id')->nullable();
 
             $table->unsignedBigInteger('parent_id')->nullable();
-            $table->foreign('parent_id')->references('id')->on('items')->onDelete('cascade');;
+            $table->foreign('parent_id')->references('id')->on('items')->onDelete('cascade');
 
             $table->string('field');
             $table->timestamps();

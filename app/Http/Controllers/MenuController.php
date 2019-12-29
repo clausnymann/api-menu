@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Menu;
-use App\Item;
+//use App\Item;
 use Illuminate\Http\Request;
 
 class MenuController extends Controller
@@ -16,6 +16,7 @@ class MenuController extends Controller
      */
     public function store(Request $request)
     {
+
         $data = $request->json()->all();
 
         $menu = new Menu;
@@ -24,7 +25,7 @@ class MenuController extends Controller
         $menu->max_children = $data['max_children'];
         $menu->save();
 
-        return response($menu, 201);
+        return response($menu, 201, ['Location' => action('MenuController@show', $menu->id)]);
     }
 
     /**
@@ -69,7 +70,7 @@ class MenuController extends Controller
     public function destroy($menu)
     {
 
-        //Item::whereMenuId($menu)->delete();
+       // Item::whereMenuId($menu)->delete();
         $destroyed = Menu::destroy($menu);
 
         return response(null, $destroyed ? 204 : 404);
