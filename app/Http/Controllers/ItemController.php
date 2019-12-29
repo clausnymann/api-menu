@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Menu;
 use Illuminate\Http\Request;
 use App\Item;
 
@@ -22,7 +21,8 @@ class ItemController extends Controller
         $item->field = $data['field'];
         $item->save();
 
-        return response($item, 201);
+        return response($item, 201, ['Location' => action('ItemController@show', $item->id)]);
+
     }
 
     /**

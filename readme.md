@@ -515,7 +515,6 @@ Get depth of menu.
 }
 ```
 
-
 ## Bonus points
 
 * 10 vs 1.000.000 menu items - what would you do differently?
@@ -525,4 +524,59 @@ Get depth of menu.
 * Use data structures
 * Use docker
 * Implement tests
-# api-menu
+
+# Comments
+
+I tried to implement the API according to best practices described here 
+https://www.vinaysahni.com/best-practices-for-a-pragmatic-restful-api.
+
+Everything seems to work as intended when testing manually using POSTMAN, https://www.getpostman.com/. 
+
+You can Import the collection of requests here
+https://www.getpostman.com/collections/5fb06bf5078b00cd0e00 to start testing. You probably have to change the port of 
+the url(http://task-menu.test:81) used in the requests from 81 to 80.
+ 
+For simple documentation take a look here:
+https://documenter.getpostman.com/view/9862169/SWLb9UiV
+
+#### In case the system grows to 1.000.000 menu items i would probably do the following
+
+* Add indexes to columns used in where statements
+* Add caching 
+* Add a table pr. menu or in other ways create smaller hierarchical structures to be stored in separate tables.
+* Convert from adjacency model to nested sets model. Only if performance gains when getting 
+items outweighs the benefits of easier adding and moving items in the the adjacency model.
+
+#### Doubts
+
+* Should deleting a menu also delete the associated items. 
+* Is a layer defined by items sharing a depth or a parent_id? 
+* Is the menu/items parameters for the methods ids or the field value? i used the id.
+* I am not sure what "Use data structures" means in this context?
+
+#### What i haven't done 
+
+* Handling mixed function parameters, but i guess something like this would take care of it:
+```
+$item = !$item instanceof Item ? Item::find($item) : $item;
+```
+* Use Docker 
+* Implement browser caching, would probably use ETag
+* Implement tests
+* Validation 
+
+#### Tech stack/Tools involved
+
+* https://laragon.org/ with MySQL 5.7, php 7.1 
+* PhpCs for phpStorm.
+* https://www.getpostman.com/ for manual testing. Take a look at the exported doc here: 
+https://documenter.getpostman.com/view/9862169/SWLb9UiV
+
+#### Install 
+
+Fork or Download this repository, migrate and seed. The only table seeded is the menu table.
+```
+php artisan migrate.
+php artisan db:seed.
+```
+

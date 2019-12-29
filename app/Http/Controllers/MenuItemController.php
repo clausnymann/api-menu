@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Menu;
 use App\Item;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Validator;
 
 class MenuItemController extends Controller
 {
@@ -17,12 +19,25 @@ class MenuItemController extends Controller
      */
     public function store(Request $request, $menu)
     {
-        $menu = Menu::find($menu);
-        $data = $request->json()->all();
-        $this->addItemsToMenu($menu, $data);
-        $items = Item::with('children')->whereMenuId($menu->id)->get();
 
-        return response($items, 201);
+        $data = $request->json()->all();
+
+        /*
+         * The laravel validation does not seem to work properly for nested requests. Maybe it could be achieved by preserving the keys
+         * and flattening the nested request.
+         */
+        $validator = Validator::make($data, [
+            '*.field' => 'required|min:2|max:30',
+        ]);
+
+        if ($validator->fails()) {
+            return response(["message" => "Validation failed", "errors" => $validator->errors()], 400);
+        }
+        $menu = Menu::find($menu);
+        $this->addItemsToMenu($menu, $data);
+        $items = Item::with('children')->whereMenuId($menu->id)->whereNull('parent_id')->get();
+
+        return response($items, 201, ['Location' => action('MenuItemController@show', $menu->id)]);
     }
 
     /**
@@ -33,7 +48,10 @@ class MenuItemController extends Controller
      */
     public function show($menu)
     {
-        return Item::with('children')->whereMenuId($menu)->get();
+
+        $items = Item::with('children')->whereMenuId($menu)->whereNull('parent_id')->get();
+
+        return response($items, 200);
     }
 
     /**
@@ -44,15 +62,16 @@ class MenuItemController extends Controller
      */
     public function destroy($menu)
     {
-        $destroyed = Item::whereMenuId($menu)->delete();
 
-        return response(null, $destroyed ? 204 : 404);
+        $deleted = Item::whereMenuId($menu)->delete();
+
+        return response(null, $deleted ? 204 : 404);
     }
 
     /**
      * Add items to menu
      *
-     * @param  mixed    $menu
+     * @param  object    $menu
      * @param  array    $items
      * @param  integer  $parentId
      * @param  integer  $depth
@@ -60,20 +79,20 @@ class MenuItemController extends Controller
      */
     private function addItemsToMenu($menu, $items, $parentId = null, $depth = 0, $layers = array())
     {
-        if(!isset($layers[$parentId])){
+        if (!isset($layers[$parentId])) {
             $layers[$parentId] = 0;
         }
 
-        foreach($items as $item){
-            if($layers[$parentId] <= $menu->max_children) {
+        foreach ($items as $item) {
+            if ($layers[$parentId] <= $menu->max_children) {
                 $newItem = Item::create([
                     'field' =>  $item['field'],
                     'parent_id' => $parentId,
-                    'menu_id' => is_null($parentId) ? $menu->id : null
+                    'menu_id' => $menu->id
                 ]);
                 $layers[$parentId]++;
-                if(isset($item['children']) && !empty($item['children'])){
-                    if($depth < $menu->max_depth){
+                if (isset($item['children']) && !empty($item['children'])) {
+                    if ($depth < $menu->max_depth) {
                         $depth++;
                         $this->addItemsToMenu($menu, $item['children'], $newItem->id, $depth, $layers);
                     }
@@ -81,5 +100,4 @@ class MenuItemController extends Controller
             }
         }
     }
-
 }
